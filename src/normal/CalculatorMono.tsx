@@ -1,6 +1,6 @@
 import React, {useState, useRef} from 'react'
 
-export const CalculatorNormal: React.FC = () => {
+export const CalculatorMono: React.FC = () => {
     type MathOp = keyof typeof mathOps;
 
     const [value, setValue] = useState('');

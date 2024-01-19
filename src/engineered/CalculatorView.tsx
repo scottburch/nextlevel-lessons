@@ -49,7 +49,6 @@ export const CalculatorView: React.FC = () => {
             </div>
         </div>
     );
-
 }
 
 const styles = {

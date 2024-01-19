@@ -1,5 +1,5 @@
 import * as React from 'react'
-import {CalculatorNormal} from "./normal/CalculatorNormal.jsx";
+import {CalculatorMono} from "./normal/CalculatorMono.jsx";
 import {CalculatorView} from "./engineered/CalculatorView.jsx";
 
 export const Main: React.FC = () => {
@@ -9,7 +9,7 @@ export const Main: React.FC = () => {
         <div style={{padding: 10}}>
             <div>
                 <h2>Monolythic Calculator</h2>
-                <CalculatorNormal/>
+                <CalculatorMono/>
             </div>
             <div>
                 <h2>Engineered Calculator</h2>
