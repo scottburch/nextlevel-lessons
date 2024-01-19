@@ -3,39 +3,42 @@ import {useCalculator} from "./useCalculator.js";
 import {MathOp, mathOps} from "./calculator.js";
 
 export const CalculatorView: React.FC = () => {
-    const [value, setValue] = useState(0);
+    const [value, setValue] = useState('');
     const inputting = useRef(false);
     const {calculate, pushOp, pushValue, clear} = useCalculator();
 
-    const onNumberClick = (num: number) => () => {
-        setValue((inputting.current ? value * 10 : 0) + num);
-        inputting.current = true;
-    };
-
     const onOpClick = (op: MathOp) => () => {
-        pushValue(value);
+        pushValue(parseFloat(value));
         pushOp(op);
         inputting.current = false;
     };
 
-    const onClear = () => {
-        clear();
-        setValue(0);
+
+    const onNumberClick = (num: string) => () => {
+        setValue(inputting.current ? value + num : num);
+        inputting.current = true;
     };
 
+    const onClear = () => {
+        clear();
+        setValue('');
+    };
+
+
     const total = () => {
-        pushValue(value);
-        setValue(calculate());
+        pushValue(parseFloat(value));
+        setValue(calculate().toString());
     };
 
     return (
         <div style={{display: "flex", width: 310, flexDirection: 'column', padding: 50}}>
-            <div style={styles.value}>{value}</div>
+            <div style={styles.value}>{value || '0'}</div>
             <div style={{display: 'flex'}}>
                 <div style={{flex: 1}}>
                     {[1, 2, 3, 4, 5, 6, 7, 8, 9, '', 0].map(n => typeof n === 'number' ?
-                        <button key={n} style={styles.numberBtn} onClick={onNumberClick(n)}>{n}</button> :
-                        <button  key={'clear'} style={styles.numberBtn} onClick={onClear}>AC</button>)}
+                        <button key={n} style={styles.numberBtn} onClick={onNumberClick(n.toString())}>{n}</button> :
+                        <button key={'clear'} style={styles.numberBtn} onClick={onClear}>AC</button>)}
+                    <button key={'.'} style={styles.numberBtn} onClick={onNumberClick('.')}>.</button>
                 </div>
                 <div style={{width: 60}}>
                     {Object.keys(mathOps).map(op =>

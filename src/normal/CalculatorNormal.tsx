@@ -3,7 +3,7 @@ import React, {useState, useRef} from 'react'
 export const CalculatorNormal: React.FC = () => {
     type MathOp = keyof typeof mathOps;
 
-    const [value, setValue] = useState(0);
+    const [value, setValue] = useState('');
     const inputting = useRef(false);
     const stack = useRef<(number | MathOp)[]>([]);
 
@@ -16,18 +16,23 @@ export const CalculatorNormal: React.FC = () => {
 
 
     const onOpClick = (op: MathOp) => () => {
-        stack.current.push(value);
+        stack.current.push(parseFloat(value));
         stack.current.push(op);
         inputting.current = false;
     };
 
-    const onNumberClick = (num: number) => () => {
-        setValue((inputting.current ? value * 10 : 0) + num);
+    const onNumberClick = (num: string) => () => {
+        setValue(inputting.current ? value + num : num);
         inputting.current = true;
     };
 
+    const clear = () => {
+        stack.current = [];
+        setValue('');
+    }
+
     const total = () => {
-        stack.current.push(value);
+        stack.current.push(parseFloat(value));
         const result = stack.current.reduce((acc: number, it, idx) => {
             return typeof it === 'number' && idx !== 0 ? (
                 mathOps[stack.current[idx - 1] as MathOp](acc, it)
@@ -36,22 +41,19 @@ export const CalculatorNormal: React.FC = () => {
             )
         }, stack.current[0] as number)
         stack.current = [];
-        setValue(result);
+        setValue(result.toString());
     }
 
-    const clear = () => {
-        stack.current = [];
-        setValue(0);
-    }
 
     return (
         <div style={{display: "flex", width: 310, flexDirection: 'column', padding: 50}}>
-            <div style={styles.value}>{value}</div>
+            <div style={styles.value}>{value || '0'}</div>
             <div style={{display: 'flex'}}>
                 <div style={{flex: 1}}>
-                        {[1, 2, 3, 4, 5, 6, 7, 8, 9, '', 0].map(n => typeof n === 'number' ?
-                            <button key={n} style={styles.numberBtn} onClick={onNumberClick(n)}>{n}</button> :
-                            <button  key={'clear'} style={styles.numberBtn} onClick={() => clear()}>AC</button>)}
+                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, '', 0].map(n => typeof n === 'number' ?
+                        <button key={n} style={styles.numberBtn} onClick={onNumberClick(n.toString())}>{n}</button> :
+                        <button key={'clear'} style={styles.numberBtn} onClick={() => clear()}>AC</button>)}
+                    <button key={'.'} style={styles.numberBtn} onClick={onNumberClick('.')}>.</button>
                 </div>
                 <div style={{width: 60}}>
                     {Object.keys(mathOps).map(op =>
