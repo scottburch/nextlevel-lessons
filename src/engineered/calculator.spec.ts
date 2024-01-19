@@ -6,7 +6,7 @@ describe('calculator', () => {
     describe('constructor', () => {
         it('should return a new calculator', () => {
             expect(newCalculator()).to.deep.equal({
-                stack: [],
+                queue: [],
                 value: 0
             } satisfies Calculator);
         });
@@ -16,7 +16,7 @@ describe('calculator', () => {
         it('should push an op to a calculator stack', () => {
             const calc = newCalculator();
             pushOp(calc, '+');
-            expect(calc.stack).to.deep.equal(['+'])
+            expect(calc.queue).to.deep.equal(['+'])
         });
     });
 
@@ -24,7 +24,7 @@ describe('calculator', () => {
         it('should push a value to a calculator stack', () => {
             const calc = newCalculator();
             pushValue(calc, 10);
-            expect(calc.stack).to.deep.equal([10]);
+            expect(calc.queue).to.deep.equal([10]);
         });
     });
 
@@ -53,7 +53,7 @@ describe('calculator', () => {
             pushOp(calc, '+');
             clear(calc);
             expect(calc.value).to.equal(0);
-            expect(calc.stack).to.have.length(0);
+            expect(calc.queue).to.have.length(0);
         });
     });
 

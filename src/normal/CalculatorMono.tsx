@@ -5,9 +5,9 @@ export const CalculatorMono: React.FC = () => {
 
     const [value, setValue] = useState('');
     const inputting = useRef(false);
-    const stack = useRef<(number | MathOp)[]>([]);
+    const queue = useRef<(number | MathOp)[]>([]);
 
-    const mathOps: Record<string, (a: number, b: number) => number> = {
+    const mathOps: Record<'+' | '-' | '*' | '/', (a: number, b: number) => number> = {
         '+': (a: number, b: number) => a + b,
         '-': (a: number, b: number) => a - b,
         '*': (a: number, b: number) => a * b,
@@ -16,8 +16,8 @@ export const CalculatorMono: React.FC = () => {
 
 
     const onOpClick = (op: MathOp) => () => {
-        stack.current.push(parseFloat(value));
-        stack.current.push(op);
+        queue.current.push(parseFloat(value));
+        queue.current.push(op);
         inputting.current = false;
     };
 
@@ -27,20 +27,20 @@ export const CalculatorMono: React.FC = () => {
     };
 
     const clear = () => {
-        stack.current = [];
+        queue.current = [];
         setValue('');
     }
 
     const total = () => {
-        stack.current.push(parseFloat(value));
-        const result = stack.current.reduce((acc: number, it, idx) => {
+        queue.current.push(parseFloat(value));
+        const result = queue.current.reduce((acc: number, it, idx) => {
             return typeof it === 'number' && idx !== 0 ? (
-                mathOps[stack.current[idx - 1] as MathOp](acc, it)
+                mathOps[queue.current[idx - 1] as MathOp](acc, it)
             ) : (
                 acc
             )
-        }, stack.current[0] as number)
-        stack.current = [];
+        }, queue.current[0] as number)
+        queue.current = [];
         setValue(result.toString());
     }
 
@@ -56,7 +56,7 @@ export const CalculatorMono: React.FC = () => {
                     <button key={'.'} style={styles.numberBtn} onClick={onNumberClick('.')}>.</button>
                 </div>
                 <div style={{width: 60}}>
-                    {Object.keys(mathOps).map(op =>
+                    {(Object.keys(mathOps) as MathOp[]).map(op =>
                         <button key={op} style={styles.opBtn} onClick={onOpClick(op)}>{op}</button>
                     )}
                     <button style={{...styles.opBtn, ...styles.equalBtn}} onClick={() => total()}>=</button>
