@@ -1,0 +1,152 @@
+### SHOW INTRO SCREEN
+Welcome to NEXTLEVEL Engxineering.  We make practical programming videos with an eye to good engineering.
+
+
+For the next few videos we will be talking about React.  React has seen a slump in popularity lately, that I think is not deserved.
+
+It seems like most of the complaints are around its focus on functional programming with pure functions and hooks.
+
+#### SHOW CalculatorMono.tsx screen
+
+So, I want to start by looking at hooks, and how they can help you be a better programmer, if you think about hooks correctly.
+
+I think the React team has done a poor job of describing hooks, or, at least, not described them in the way I have found them very useful.
+
+Namely, to separate view and business logic as well as separate pure from impure code.
+
+This is possibly due to the fact that most people in the market don't really understand functional programming, so they may not
+understand concepts like "pure" and "impure".  If you are one of them, I will touch on it in this video, and will be making a
+series of videos on functional programming in the future.
+
+So, lets get started.
+
+##### Show browser
+
+
+For this video I have created a calculator component using React.  I chose a calculator as the
+first example due to it being a good balance of simple and complex.
+
+For this video I have written two versions.
+The first as a monolithic component (the way many coders would write it)
+and the second applying some good engineering techniques.
+Both, of course, behave identically.
+
+In this video, I will demonstrate why the second is a better way to create components in react,
+but the fundamental techniques apply to any programming project.
+
+
+It starts off by defining state used in the component.
+* The value that is being displayed using useState() so the value gets rendered any time that it changes.
+* A inputting boolean that will be clearer later
+* And, a queue to put numbers and operators in as you enter them into the calculator
+
+The first function is onOpClick().  This function is called when an operator button is pressed.
+Next is the onNumberClick().  Called when a number button is pressed.
+Then a clear() function, called when the clear button is pressed.
+And finally, the total function which is called when you press equals.
+
+The onOpClick function pushes the current value into the queue and then the operator,
+So if I type 2 *, the two will go into the queue, and then the * operator.
+If I enter another number, it will become the value and then I might press another operator.
+So, if I type 2 * 2 * 3, each of the numbers and operators will be placed into the queue.
+
+onNumberClick() takes a number (as a string) and adds it to the end of the previous numbers.
+Here is where the 'inputting' boolean comes in, it is used to know if a new number is being entered
+or we are adding a digit to the previous number.
+
+The clear() function is pretty simple, it wipes out the queue and sets the value to empty.
+
+The magic is in the "total" function First we will push the value into the queue,
+then we will walk through queue to reduce it to the single result value.
+I won't walk through the logic here, you are free to look at it if you like.  For now, we will
+stay at a higher level.
+Finally, the total() function will set the value to the result.
+
+This all works fine, but there is a problem...  Can you spot it?  How do we test this calculator.
+This component, while somewhat simple, is also complex enough that it is easy for things to go
+wrong in our logic.
+
+You could fire up Jest or some other library for emulating the dom and pseudo mount the component
+to test the component from the outside to try to test the guts of the component, but that is not a
+really good way to test business logic, since it can be hard to capture all situations or edge cases.
+Also, testing from the UI is difficult and tedious, so many just don't do it deciding to abandon
+test driven development and simply go back and forth between the view and code to "make things work".
+However, if you were to do this, you could easily break things you thought were working and since you
+have no regression tests, future changes could break features without you even knowing.  This is
+a large contributor to endless "bug chasing".
+
+What if you instead, separate out the difficult logic
+into its own, easily testable chunk of code that can be used by the component.
+
+React hooks makes this easy.
+
+So, lets take a look at what this component looks like when it is properly engineered.
+
+###### switch to Calculator.ts
+
+We start by creating a Calculator outside of react.  This code can be reused anywhere since it
+has nothing to do with react.  This brings us to the first benefit of proper engineering,
+reusable code.
+
+This code is written using sonme functional programming concepts, so it might look a bit weird
+if you are used to using classes.  Don't worry, you can use classes if you wish, I prefer
+using functional programming, which I will cover in other videos.
+
+Most of this code should look familiar from the earlier code in the monolithic calculator component.
+That is because it is, for the most part, the same code.  However, here is one huge advantage.
+This code is easy to test.
+
+#### Switch to calculator.spec.ts #####
+I won't go over these tests individually, and they are by no means extensive.
+This is just to demonstrate the concept of writing your more complicated business code
+away from your view code.  And, of course, this was written using test driven development.
+I won't talk about TDD here, but I will be discussing the process and benifits in other videos.
+
+Now, we can create our hook to provide the interface for our newly
+created calculator for our component.
+
+### Switch to useCalculator.ts
+
+In our useCalculator() hook we simply create a new calculator and assign it to the reference 'calc'
+using the useref() hook.  If you are unfamiliar with the useRef() hook, there are many resources
+that discuss the various hooks built into react.  For now, just think of it as a variable to
+point to the calculator.
+
+At the bottom, I return the interface for my component.  Notice that I don't pass the calculator
+to the component, this makes for a very simple API between the component and my calculator code.
+By creating a hook as an interface to the component, I not only take advantage of the
+built in hooks in react, but I also separate the calculator interface from the view component.
+
+This becomes useful when you work on larger teams or use third party libraries.
+Imagine you use a common library all over your code base, and then the library maintainer
+decides to change their interface.  You would then have to go to many places in the code to
+make those changes.
+
+With a hook, you can make your change in a single place and your components don't have to know
+that anything changed.
+
+We could have simply put the calculator code into the hook directly instead of creating separate
+calculator code, but, if we had done that, we would not have our reusable, easily testable code.
+
+In this case, we simply create an adapter between our tested calculator code and our component.
+Since this hook does very little, there is little chance that it will introduce a bug.
+
+########## Show CalculatorView.tsx
+
+Here is the reengineered calculator component.  The first two state values
+are the same as the previous calculator component since they are
+component only values.
+
+The third are the functions exposed by the useCalculator() hook.
+The functions in this component are the samne as the previous calculator,
+but you will notice that they are simpler than they were before.
+
+Now that the calculator code is in a separate fully tested piece of code
+we don't have to worry about the behaviour of the calculator
+and we can focus purely on the behaviour of our component.
+
+In the next part, we will show this same technique with remote service calls.
+
+
+
+
